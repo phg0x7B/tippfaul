@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    cgi (0.3.2)
+    colorize (0.8.1)
+    erb (2.2.3)
+      cgi
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  colorize
+  erb
+
+BUNDLED WITH
+   2.2.3
