@@ -1,0 +1,14 @@
+databaseChangeLog(logicalFilePath: '.') {
+
+  changeSet(id: '<%= changeSetId %>', author: 'stevesaliman') {
+        createTable(schemaName: '<%= schemaName %>', tablespace: 'zoo',
+                    tableName: 'badger_table', remarks: 'Honey Badger don\'t care') {
+            // TODO should be convert ot bigserial
+            column(name: 'id', type: 'bigint', autoIncrement: true) {
+                constraints(primaryKey: true)
+            }
+            column(name: 'Description', type: 'varchar(250)')
+        }
+    }
+
+}
