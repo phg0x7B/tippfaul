@@ -1,13 +1,12 @@
 
 class Renderer
-  attr_reader :template, :binding_klass
+  attr_reader :template
 
-  def initialize(template_file, binding_klass)
+  def initialize(template_file)
     @template = File.open("#{template_file}.erb", 'rb', &:read)
-    @binding_klass = binding_klass
   end
 
-  def render
-    ERB.new(template).result(binding_klass.binding)
+  def render(binding_scope)
+    ERB.new(template).result(binding_scope)
   end
 end

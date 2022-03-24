@@ -1,0 +1,17 @@
+databaseChangeLog(logicalFilePath: '.') {
+
+  changeSet(id: '<%= @changeSetId %>', author: '<%= @author %>') {
+        createTable(<%= "schemaName: '#{@schemaName}'," unless @schemaName.nil? %>
+            tableName: '<%= @table_name %>',
+            remarks: 'generated <%= @table_name %> migration') {
+
+
+            // TODO should be convert ot bigserial - primary_key translates to bigserial ;-)
+            column(name: 'id', type: 'bigint', autoIncrement: true) {
+                constraints(primaryKey: true)
+            }
+            column(name: 'Description', type: 'varchar(250)')
+        }
+    }
+
+}

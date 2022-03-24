@@ -3,13 +3,18 @@ require 'erb'
 require 'colorize'
 require 'thor'
 
+Dir[File.join(__dir__, 'extensions', '*.rb')].each { |file| require file }
+
 require_relative 'lib/migration.rb'
 # Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 
 # https://guides.rubygems.org/make-your-own-gem/
 
 module Tippfaul
-  TEMPLATE_DIR = File.join(__dir__, 'templates')
+
+  def self.template_dir
+    return File.join(__dir__, 'templates')
+  end
 
 end
 
@@ -45,12 +50,12 @@ class TippfaulCLI < Thor
 
   desc "generate THING PARAMETERS", "Generate migration / model"
 
-  def generate(thing, parameters)
+  def generate(thing, *parameters)
 
     command = case thing
     when 'migration', 'm'
-      puts "Create a new migration"
-      Migration.new(parameters)
+      puts "Create a new migration #{parameters}"
+      MigrationCommand.new(parameters)
 
     else
       raise "Sorry, #{thing} is not supported yet."
