@@ -7,6 +7,6 @@ class Renderer
   end
 
   def render(binding_scope)
-    ERB.new(template).result(binding_scope)
+    ERB.new(template, nil, '-').result(binding_scope)
   end
 end

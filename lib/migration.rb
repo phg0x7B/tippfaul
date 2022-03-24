@@ -54,9 +54,24 @@ module Migration
   end
 
   class Column
+    attr_reader :name, :type, :index
 
     def initialize(name, type, index=nil)
-      puts "New Column #{name} of #{type} with #{index}"
+      @name, @type, @index = name, map_datatype(type), index
+      @alias_type = type
+    end
+
+
+    def map_datatype(type_string)
+      PostgresDatatypes::NATIVE_DATABASE_TYPES[type_string.to_sym]
+    end
+
+    def primary_key?
+      @alias_type == 'primary_key'
+    end
+
+    def constraints?
+      primary_key? || index
     end
   end
 
@@ -75,14 +90,15 @@ class MigrationCommand
   end
 
   def process_arguemnts
+    got_primary_key = false
+
     @arguments.each { |column_string|
       column_def = column_string.split(':')
       @columns << Migration::Column.new(*column_def)
+      got_primary_key = true if column_def[1] == 'primary_key'
     }
-  end
 
-  def map_datatype(type_string)
-    Migration::PostgresDatatypes::NATIVE_DATABASE_TYPES[type_string.to_sym]
+    @columns.unshift(Migration::Column.new('id', 'primary_key')) unless got_primary_key
   end
 
   def create_timestamp
@@ -93,21 +109,24 @@ class MigrationCommand
     @migration_name.underscore
   end
 
+  def join_table_name(table_name_parts)
+    return table_name_parts.join('_')
+  end
+
   def table_name
     table_name_parts = @migration_name.underscore.split('_')
 
-    case table_name_parts.shift.downcase
+    return case table_name_parts.shift.downcase
     when 'add'
       raise "add not supported yet ;-)"
       z = table_name_parts.slice(0, table_name_parts.index('to'))
-      table_name_parts.join('_')
+      join_table_name(table_name_parts)
     when 'create'
       puts "create #{table_name_parts.join('_')}"
-      table_name_parts.join('_')
+      join_table_name(table_name_parts)
     else
       raise "don't know what to do with #{@migration_name}"
     end
-
   end
 
   def migration_action
@@ -124,6 +143,12 @@ class MigrationCommand
     end
 
     return "migration.#{action_file}"
+  end
+
+  def attr(str, obj)
+    unless obj.nil?
+      return "#{str}: '#{obj}',"
+    end
   end
 
   def exec!
