@@ -1,0 +1,23 @@
+package <%= @base_package %>.models;
+
+import java.util.List;
+
+/**
+ * API for {@link <%= @model_name.camelize %>Service}.
+ *
+ * @author <%= @author %>
+ *
+ * <%= @license_hint %>
+ */
+public interface <%= @model_name.camelize %>Service
+{
+
+    /**
+     * Find a list of <%= @model_name.gsub('_', ' ') %> entities starting with or equals to the given name.
+     *
+     * @param name the <%= @model_name.gsub('_', ' ') %> name to search
+     * @return a list of <%= @model_name.pluralize %> starting with or equals to the given name.
+     */
+    List<<%= @model_name.camelize %>Dto> findByName(String name);
+
+}

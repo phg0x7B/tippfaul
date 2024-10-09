@@ -1,0 +1,10 @@
+databaseChangeLog(logicalFilePath: '.') {
+
+    changeSet(id: '<%= @changeSetId %>', author: '<%= @author %>') {
+        addColumn(tableName: '<%= @table_name.pluralize %>') {
+            <%- @columns.each do |column| -%>
+            column(name: '<%= column.name.underscore %>', type: '<%= column.sql_type %>' )
+            <%- end -%>
+        }
+    }
+}

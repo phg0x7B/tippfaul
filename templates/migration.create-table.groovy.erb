@@ -1,14 +1,14 @@
 databaseChangeLog(logicalFilePath: '.') {
 
   changeSet(id: '<%= @changeSetId %>', author: '<%= @author %>') {
-        createTable(<%= attr("schemaName", @schemaName) %>
-            tableName: '<%= @table_name %>',
-            remarks: 'generated <%= @table_name %> migration') {
+        createTable(<%= attr("schemaName", @schemaName) %> tableName: '<%= @table_name.pluralize %>', remarks: 'generated <%= @table_name %> migration') {
             <% @columns.each do |column| %>
-            column(name: '<%= column.name %>', type: '<%= column.type %>' <%= ", autoIncrement: true" if column.primary_key? %>) <% if column.constraints? -%> {
+            column(name: '<%= column.name.underscore %>', type: '<%= column.sql_type %>' <%= ", autoIncrement: true" if column.primary_key? %>) <% if column.constraints? -%> {
                 <%= "constraints(primaryKey: true)" if column.primary_key? %>
             }<% end -%>
             <% end %>
+            column(name: 'created_at', type: 'timestamptz')
+            column(name: 'updated_at', type: 'timestamptz')
         }
     }
 

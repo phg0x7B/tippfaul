@@ -5,6 +5,7 @@ GEM
     colorize (0.8.1)
     erb (2.2.3)
       cgi
+    thor (1.2.1)
 
 PLATFORMS
   x86_64-linux
@@ -12,6 +13,7 @@ PLATFORMS
 DEPENDENCIES
   colorize
   erb
+  thor
 
 BUNDLED WITH
-   2.2.3
+   2.2.28

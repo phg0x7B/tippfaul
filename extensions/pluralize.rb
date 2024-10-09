@@ -5,7 +5,8 @@ module Pluralize
     'woman': 'women',
     'man': 'men',
     'child': 'children',
-    'tooth': 'teeth'
+    'tooth': 'teeth',
+    'class': 'classes'
   }.freeze
 
 

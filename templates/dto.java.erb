@@ -1,0 +1,30 @@
+package <%= @base_package %>.models;
+
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Data traonsfer object fro <%= @table_name.gsub('_', ' ') %>.
+ *
+ * @author <%= @author %>
+ *
+ * <%= @license_hint %>
+ */
+@NoArgsConstructor
+@Getter
+@Setter
+public class <%= @model_name %>Dto implements Serializable
+{
+    private static final long serialVersionUID = 1L;
+
+<% @columns.each do |column| %>
+    @JsonProperty("<%= column.name.camelize(false) %>")
+    private <%= column.java_type %> <%= column.name.camelize(false) %>;
+<% end %>
+
+}

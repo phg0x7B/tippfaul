@@ -1,0 +1,55 @@
+package <%= @base_package %>.mappers;
+
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Hibernate model of the <%= @table_name %> DB table.
+ *
+ * @author <%= @author %>
+ *
+ * <%= @license_hint %>
+ */
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
+@Entity
+@Table(name = "<%= @table_name.underscore.pluralize %>")
+public class <%= @model_name %>Entity implements Serializable
+{
+    private static final long serialVersionUID = 1L;
+
+<% @columns.each do |column| %>
+<%= "    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n" if column.primary_key? -%>
+    @Column(name = "<%= column.name.underscore %>"<%= column.primary_key? ? ', updatable = false, nullable = false' : '' -%>)
+    private <%= column.java_type %> <%= column.name.camelize(false) %>;
+<% end %>
+
+    @Builder.Default
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt = null;
+
+    @Builder.Default
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt = null;
+}

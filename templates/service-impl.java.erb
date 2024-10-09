@@ -1,0 +1,38 @@
+package <%= @base_package %>.models;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import package <%= @base_package %>.models.repositories.<%= @model_name.camelize %>Repository;
+
+import lombok.NoArgsConstructor;
+
+/**
+ * Implementation for {@link <%= @model_name.camelize %>Service}.
+ *
+ * @author <%= @author %>
+ *
+ * <%= @license_hint %>
+ */
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Service
+public class <%= @model_name.camelize %>ServiceImpl implements <%= @model_name.camelize %>Service
+{
+    private final <%= @model_name.camelize %>Repository <%= @model_name.downcase %>Repository;
+
+    @Valid
+    private final CollectionConversionService conversionService;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see <%= @base_package %>.model.<%= @model_name.camelize %>Service#findByName<(java.lang.String)
+     */
+    @Override
+    public List<<%= @service_name %>Dto> findByName(final String name)
+    {
+        return conversionService.convertCollection();
+    }
+}

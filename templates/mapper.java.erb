@@ -1,0 +1,28 @@
+package <%= @base_package %>.mappers;
+
+import org.mapstruct.Mapper;
+import org.springframework.core.convert.converter.Converter;
+
+import <%= @base_package %>.models.<%= @model_name %>Dto;
+import <%= @base_package %>.models.<%= @model_name %>Entity;
+
+/**
+ * Mapstruct mapper for <%= @model_name %>Entity to <%= @model_name %>Dto
+ *
+ * @author <%= @author %>
+ *
+ * <%= @license_hint %>
+ */
+@Mapper(componentModel = "spring")
+public interface <%= @model_name %>Mapper extends Converter<<%= @model_name %>Entity, <%= @model_name %>Dto>
+{
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.springframework.core.convert.converter.Converter#convert(java.lang.Object)
+     */
+    @Override
+    <%= @model_name %>Dto convert(<%= @model_name %>Entity enitity);
+
+}

@@ -1,0 +1,34 @@
+package <%= @base_package %>.models;
+
+import static <%= @base_package %>.test.TestUtils.createValidator;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * UnitTest for hibernate model <%= @model_name %>Entity.
+ *
+ * @author <%= @author %>
+ *
+ * <%= @license_hint %>
+ */
+class <%= @model_name %>EntityTest
+{
+    private Validator validator = createValidator();
+
+    @Test
+    void shouldValidate()
+    {
+        final <%= @model_name %>Entity entity = new <%= @model_name %>Entity.builder()
+                .build();
+
+        final Set<ConstraintViolation<<%= @model_name %>Entity>> violations = validator.validate(entity);
+
+        assertThat(violations).isEmpty();
+    }
+}

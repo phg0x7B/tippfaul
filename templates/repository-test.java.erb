@@ -1,0 +1,46 @@
+package <%= @base_package %>.models.repositories;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import <%= @base_package %>.models.<%= @model_name.camelize %>Entity;
+import <%= @base_package %>.test.IntegrationTestBase;
+
+/**
+ * Hibernate interface for {@link <%= @model_name.camelize %>Entity}.
+ *
+ * @author <%= @author %>
+ *
+ * <%= @license_hint %>
+ */
+@SpringBootTest
+@Transactional
+@ActiveProfiles("test")
+@WireMockTest(httpPort = 8098, httpsPort = 8099, httpsEnabled = true)
+class <%= @model_name.camelize %>RepositoryIntegrationTest extends IntegrationTestBase
+{
+    @Autowired
+    private <%= @model_name.camelize %>Repository <%= @model_name.camelize %>Repository;
+
+    @Test
+    void should<%= @model_name.camelize %>()
+    {
+        final <%= @model_name.camelize %>Entity entity = new <%= @model_name.camelize %>Entity();
+        final <%= @model_name.camelize %>Entity saved = <%= @model_name.camelize %>Repository.save(entity);
+
+        assertEquals(entity, saved);
+        assertNotNull(saved.getId());
+    }
+}
