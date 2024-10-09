@@ -9,4 +9,5 @@ class Renderer
   def render(binding_scope)
     ERB.new(template, trim_mode: '-').result(binding_scope)
   end
+
 end

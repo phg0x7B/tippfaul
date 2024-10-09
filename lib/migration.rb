@@ -262,42 +262,55 @@ class ModelCommand < MigrationCommand
     @model_name = @table_name.camelize.singular
 
     outdir = Dir.pwd #File.basename(Dir.getwd)
-    puts "Write to #{outdir}"
 
-    puts "ModelName: #{@model_name}"
-    FileUtils.mkdir_p(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase))
-    FileUtils.mkdir_p(File.join(outdir, 'src', 'test', 'java', Tippfaul.package_slugs, @model_name.downcase))
-    FileUtils.mkdir_p(File.join(outdir, 'src', 'integration-test', 'java', Tippfaul.package_slugs, @model_name.downcase))
-    FileUtils.mkdir_p(File.join(outdir, 'src', 'integration-test', 'resources', 'db', 'fixtures', @model_name.downcase))
+    FileUtils.mkdir_p(main_dir(outdir))
+    FileUtils.mkdir_p(test_dir(outdir))
+    FileUtils.mkdir_p(integration_test_src_dir(outdir))
+    FileUtils.mkdir_p(fixtures_dir(outdir))
 
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Entity.java")) do |out|
+    open_target(main_dir(outdir, "#{@model_name}Entity.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "entity.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'test', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}EntityTest.java")) do |out|
+    open_target(test_dir(outdir, "#{@model_name}EntityTest.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "entity-test.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Repository.java")) do |out|
+    open_target(main_dir(outdir, "#{@model_name}Repository.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "repository.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'integration-test', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}RepositoryIntegrationTest.java")) do |out|
+    open_target(integration_test_src_dir(outdir, "#{@model_name}RepositoryIntegrationTest.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "repository-test.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'integration-test', 'resources', 'db', 'fixtures', "#{@table_name}.csv")) do |out|
+    open_target(fixtures_dir(outdir, "#{@table_name}.csv")) do |out|
         out.puts @columns.map{|c| "\"#{c.name.underscore}\"" }.join(',')
         # out.puts "-1, ,\"2022-04-28 20:21:47.376006\",\"2022-04-28 20:21:47.376006\""
     end
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Dto.java")) do |out|
+    open_target(main_dir(outdir, "#{@model_name}Dto.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "dto.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Mapper.java")) do |out|
+    open_target(main_dir(outdir, "#{@model_name}Mapper.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "mapper.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Service.java")) do |out|
+    open_target(main_dir(outdir, "#{@model_name}Service.java")) do |out|
       out.puts Renderer.new(File.join(Tippfaul.template_dir, "service.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}ServiceImpl.java")) do |out|
+    open_target(main_dir(outdir, "#{@model_name}ServiceImpl.java")) do |out|
       out.puts Renderer.new(File.join(Tippfaul.template_dir, "service-impl.java")).render(binding)
     end
+  end
 
+  def main_dir(outdir, file = '')
+    return File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, file)
+  end
+
+  def test_dir(outdir, file = '')
+    return File.join(outdir, 'src', 'test', 'java', Tippfaul.package_slugs, @model_name.downcase, file)
+  end
+
+  def integration_test_src_dir(outdir, file = '')
+    return File.join(outdir, 'src', 'integration-test', 'java', Tippfaul.package_slugs, @model_name.downcase, file)
+  end
+
+  def fixtures_dir(outdir, file = '')
+    return File.join(outdir, 'src', 'integration-test', 'resources', 'db', 'fixtures', @model_name.downcase, file)
   end
 end

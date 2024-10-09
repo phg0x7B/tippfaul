@@ -51,9 +51,15 @@ class TippfaulCLI < Thor
     when 'migration'
       puts "Create a new migration #{parameters}"
       MigrationCommand.new(parameters)
+
     when 'scaffold'
       puts "Create a new scaffold #{parameters}"
       ModelCommand.new(parameters)
+
+    when 'liquibase'
+      puts "Create from liquibase migration"
+      FromLiquibaseCommand.new(parameters)
+
     else
       raise "Sorry, #{thing} is not supported yet."
     end
