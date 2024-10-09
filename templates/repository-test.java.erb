@@ -1,4 +1,4 @@
-package <%= @base_package %>.models.repositories;
+package <%= @base_package %>.<%= @model_name.downcase %>;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import <%= @base_package %>.models.<%= @model_name.camelize %>Entity;
 import <%= @base_package %>.test.IntegrationTestBase;
 
 /**

@@ -7,7 +7,6 @@ require 'thor'
 Dir[File.join(__dir__, 'extensions', '*.rb')].each { |file| require file }
 
 require_relative 'lib/migration.rb'
-require_relative 'lib/service.rb'
 # Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 
 # https://guides.rubygems.org/make-your-own-gem/
@@ -31,7 +30,11 @@ module Tippfaul
   end
 
   def self.package_slugs
-    return ['de', 'andarte']
+    return ['de', 'andarte', 'recipes']
+  end
+
+  def self.project_root
+    return Dir.pwd
   end
 
 end
@@ -48,12 +51,9 @@ class TippfaulCLI < Thor
     when 'migration'
       puts "Create a new migration #{parameters}"
       MigrationCommand.new(parameters)
-    when 'model'
-      puts "Create a new Model #{parameters}"
+    when 'scaffold'
+      puts "Create a new scaffold #{parameters}"
       ModelCommand.new(parameters)
-    when 'service'
-      puts "Create a new Service #{parameters}"
-      ServiceCommand.new(parameters)
     else
       raise "Sorry, #{thing} is not supported yet."
     end

@@ -1,6 +1,7 @@
 
 require 'thor'
 require 'time'
+require 'fileutils'
 
 require_relative 'renderer.rb'
 
@@ -227,28 +228,24 @@ class MigrationCommand
   end
 
   def open_target(outfile_name, &block)
-      raise "#{outfile_name} already exists" if File.exist? outfile_name
+    raise "#{outfile_name} already exists" if File.exist? outfile_name
 
-      File.open(outfile_name, 'wb') do |out|
-         yield(out)
-      end
+    File.open(outfile_name, 'wb') do |out|
+      yield(out)
+    end
   end
 
   def exec!
-     process_arguemnts
+    process_arguemnts
 
-     @author = ENV['USER'] || ENV['USERNAME']
-     @changeSetId = "#{create_timestamp}_#{migration_as_filename}"
-     @table_name = table_name
-     @schemaName = nil
+    @author = ENV['USER'] || ENV['USERNAME']
+    @changeSetId = "#{create_timestamp}_#{migration_as_filename}"
+    @table_name = table_name
+    @schemaName = nil
 
-     puts "TableName: #{@table_name}"
-     rendered = Renderer.new(File.join(Tippfaul.template_dir, "#{migration_action}.#{DEFAULT_MIGRATION_EXTENSION}")).render(binding)
-     #puts rendered
-     #return
-
-     open_target(File.join(Dir.pwd, 'src', 'main', 'resources', 'db', 'migrations', "#{@changeSetId}.#{DEFAULT_MIGRATION_EXTENSION}")) do |out|
-        out.puts rendered
+    puts "TableName: #{@table_name}"
+    open_target(File.join(Dir.pwd, 'src', 'main', 'resources', 'db', 'changelog', "#{@changeSetId}.#{DEFAULT_MIGRATION_EXTENSION}")) do |out|
+      out.puts Renderer.new(File.join(Tippfaul.template_dir, "#{migration_action}.#{DEFAULT_MIGRATION_EXTENSION}")).render(binding)
     end
   end
 
@@ -268,35 +265,39 @@ class ModelCommand < MigrationCommand
     puts "Write to #{outdir}"
 
     puts "ModelName: #{@model_name}"
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, 'models', "#{@model_name}Entity.java")) do |out|
+    FileUtils.mkdir_p(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase))
+    FileUtils.mkdir_p(File.join(outdir, 'src', 'test', 'java', Tippfaul.package_slugs, @model_name.downcase))
+    FileUtils.mkdir_p(File.join(outdir, 'src', 'integration-test', 'java', Tippfaul.package_slugs, @model_name.downcase))
+    FileUtils.mkdir_p(File.join(outdir, 'src', 'integration-test', 'resources', 'db', 'fixtures', @model_name.downcase))
+
+    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Entity.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "entity.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'test', 'java', Tippfaul.package_slugs, 'models', "#{@model_name}EntityTest.java")) do |out|
+    open_target(File.join(outdir, 'src', 'test', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}EntityTest.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "entity-test.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, 'models', 'repositories', "#{@model_name}Repository.java")) do |out|
+    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Repository.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "repository.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'itest', 'java', Tippfaul.package_slugs, 'models', 'repositories', "#{@model_name}RepositoryIntegrationTest.java")) do |out|
+    open_target(File.join(outdir, 'src', 'integration-test', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}RepositoryIntegrationTest.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "repository-test.java")).render(binding)
     end
-    open_target(File.join(outdir, 'src', 'integrationtest', 'resources', 'db', 'fixtures', "#{@table_name}.csv")) do |out|
+    open_target(File.join(outdir, 'src', 'integration-test', 'resources', 'db', 'fixtures', "#{@table_name}.csv")) do |out|
         out.puts @columns.map{|c| "\"#{c.name.underscore}\"" }.join(',')
         # out.puts "-1, ,\"2022-04-28 20:21:47.376006\",\"2022-04-28 20:21:47.376006\""
     end
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, 'models', "#{@model_name}Dto.java")) do |out|
+    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Dto.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "dto.java")).render(binding)
     end
-
-    #open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, 'models', "#{@model_name}Service.java")) do |out|
-    #  out.puts Renderer.new(File.join(Tippfaul.template_dir, "service.java")).render(binding)
-    #end
-    #open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, 'models', "#{@model_name}ServiceImpl.java")) do |out|
-    #  out.puts Renderer.new(File.join(Tippfaul.template_dir, "service-impl.java")).render(binding)
-    #end
-
-    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, 'mapper', "#{@model_name}Mapper.java")) do |out|
+    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Mapper.java")) do |out|
         out.puts Renderer.new(File.join(Tippfaul.template_dir, "mapper.java")).render(binding)
     end
+    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}Service.java")) do |out|
+      out.puts Renderer.new(File.join(Tippfaul.template_dir, "service.java")).render(binding)
+    end
+    open_target(File.join(outdir, 'src', 'main', 'java', Tippfaul.package_slugs, @model_name.downcase, "#{@model_name}ServiceImpl.java")) do |out|
+      out.puts Renderer.new(File.join(Tippfaul.template_dir, "service-impl.java")).render(binding)
+    end
+
   end
 end

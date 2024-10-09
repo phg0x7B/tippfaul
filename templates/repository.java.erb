@@ -1,4 +1,4 @@
-package <%= @base_package %>.models.repositories;
+package <%= @base_package %>.models.<%= @model_name.downcase %>;
 
 
 import java.util.Collection;
@@ -11,8 +11,6 @@ import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-
-import <%= @base_package %>.models.repositories.<%= @model_name.camelize %>Entity;
 
 /**
  * Hibernate interface for {@link <%= @model_name.camelize %>Entity}.
