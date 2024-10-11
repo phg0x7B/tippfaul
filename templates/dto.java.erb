@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Data traonsfer object fro <%= @table_name.gsub('_', ' ') %>.
+ * Data traonsfer object fro <%= @table_name.singular.gsub('_', ' ') %>.
  *
  * @author <%= @author %>
  *
@@ -22,13 +22,14 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class <%= @model_name %>Dto implements Serializable
-{
+public class <%= @model_name %>Dto implements Serializable {
     private static final long serialVersionUID = 1L;
 
-<% @columns.each do |column| %>
+<%- @columns.each do |column| -%>
+    <%= "@NotNull" unless column.nullable %>
     @JsonProperty("<%= column.name.camelize(false) %>")
     private <%= column.java_type %> <%= column.name.camelize(false) %>;
-<% end %>
+
+<%- end -%>
 
 }

@@ -37,12 +37,12 @@ public class <%= @model_name %>Entity implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-<% @columns.each do |column| %>
+<%- @columns.each do |column| -%>
 <%= "    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n" if column.primary_key? -%>
     @Column(name = "<%= column.name.underscore %>"<%= column.primary_key? ? ', updatable = false, nullable = false' : '' -%>)
     private <%= column.java_type %> <%= column.name.camelize(false) %>;
-<% end %>
 
+<%- end -%>
     @Builder.Default
     @CreationTimestamp
     @Column(name = "created_at")

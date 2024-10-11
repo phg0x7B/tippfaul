@@ -12,25 +12,34 @@ module FromLiquibase
       'datetime' => 'OffsetDateTime',
       'decimal' => 'double',
       'int' => 'int',
+      'Long' => 'Long',
       'smallint' => 'short',
       'varchar' => 'String'
     }
 
-    attr_accessor :name, :primaryKey, :nullable, :type
+    attr_accessor :name, :primary_key, :nullable, :type
 
     def initialize(params)
       @name = params[:name]
       @type = if @name.end_with?('_id') || @name == 'id'
         'Long'
       else
-        translate_type(params[:type].downcase.gsub(/\(.+\)/, '')) # if params[:type]
+        java_type(params[:type].downcase.gsub(/\(.+\)/, '')) # if params[:type]
       end
       @nullable = true
     end
 
-    def translate_type(type)
-      return TABLE[type] if TABLE[type]
-      raise "Unknown type #{type}"
+    def java_type(type_name=nil)
+      type_name = type if type_name.nil?
+
+      return TABLE[type_name] if TABLE[type_name]
+    rescue
+      puts "Error when try to find java type for #{type_name}"
+      raise
+    end
+
+    def primary_key?
+      primary_key
     end
   end
 
@@ -65,7 +74,7 @@ module FromLiquibase
         @columns.last.nullable = h[:nullable]
       end
       if h[:primaryKey]
-        @columns.last.primaryKey = h[:primaryKey]
+        @columns.last.primary_key = h[:primaryKey]
         @columns.last.type = 'Long'
       end
 
@@ -90,7 +99,7 @@ module FromLiquibase
 
 end # module
 
-class FromLiquibaseCommand
+class FromLiquibaseCommand < ModelCommand
 
   attr_reader :arguments
 
@@ -104,16 +113,19 @@ class FromLiquibaseCommand
   def exec!
     puts "#{Tippfaul.project_root}/#{DB_DIR}/"
 
+    @license_hint = Tippfaul.license_hint
+    @base_package = Tippfaul.base_package
+
     Dir["#{Tippfaul.project_root}/#{DB_DIR}/*.groovy"].each do |f|
       # load f
       loader = FromLiquibase::LiquibaseLoader.new
 
       @table_name, @columns = loader.exec(f)
+      @model_name = @table_name.camelize.singular
 
-      # TODO load ERB templates
-      # TODO add license notes to each java file
+      Tippfaul.create_dirs
 
-      puts Renderer.new(File.join(Tippfaul.template_dir, "lb-dto.java")).render(binding)
+      render_and_write
     end
   end
 
