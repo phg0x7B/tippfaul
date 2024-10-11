@@ -114,14 +114,12 @@ class FromLiquibaseCommand < ModelCommand
   end
 
   def exec!
-    Dir["#{Tippfaul.project_root}/#{DB_DIR}/*.groovy"].each do |f|
+    Dir["#{Tippfaul.main_resources_dir('db', 'changelog')}/*.groovy"].each do |f|
       # load f
       loader = FromLiquibase::LiquibaseLoader.new
 
       @table_name, @columns = loader.exec(f)
       @model_name = @table_name.camelize.singular
-
-      Tippfaul.create_dirs
 
       render_and_write
     end

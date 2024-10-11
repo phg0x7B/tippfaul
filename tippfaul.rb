@@ -35,34 +35,27 @@ module Tippfaul
   end
 
   def self.project_root
-    return Dir.pwd
+    raise "Nope"
   end
 
-  def self.main_dir(model_name, file = '')
-    return File.join(project_root, 'src', 'main', 'java', Tippfaul.package_slugs, model_name.downcase, file)
+  def self.main_dir(model_name = '', file = '')
+    return File.join('src', 'main', 'java', Tippfaul.package_slugs, model_name.downcase, file)
   end
 
-  def self.main_resources_dir(subdirs_and_file = '')
-    return File.join(project_root, 'src', 'main', 'resources', subdirs_and_file)
+  def self.main_resources_dir(*subdirs_and_file)
+    return File.join('src', 'main', 'resources', subdirs_and_file)
   end
 
-  def self.test_dir(model_name, file = '')
-    return File.join(project_root, 'src', 'test', 'java', Tippfaul.package_slugs, model_name.downcase, file)
+  def self.test_dir(model_name = '', file = '')
+    return File.join('src', 'test', 'java', Tippfaul.package_slugs, model_name.downcase, file)
   end
 
-  def self.integration_test_src_dir(model_name, file = '')
-    return File.join(project_root, 'src', 'integration-test', 'java', Tippfaul.package_slugs, model_name.downcase, file)
+  def self.integration_test_src_dir(model_name = '', file = '')
+    return File.join('src', 'integration-test', 'java', Tippfaul.package_slugs, model_name.downcase, file)
   end
 
   def self.fixtures_dir(file = '')
-    return File.join(project_root, 'src', 'integration-test', 'resources', 'db', 'fixtures', file)
-  end
-
-  def self.create_dirs
-    FileUtils.mkdir_p(main_dir(project_root))
-    FileUtils.mkdir_p(test_dir(project_root))
-    FileUtils.mkdir_p(integration_test_src_dir(project_root))
-    FileUtils.mkdir_p(fixtures_dir(project_root))
+    return File.join('src', 'integration-test', 'resources', 'db', 'fixtures', file)
   end
 
 end
