@@ -108,14 +108,12 @@ class FromLiquibaseCommand < ModelCommand
 
   def initialize(arguments)
     @arguments = arguments
+    @author = ENV['USER'] || ENV['USERNAME']
+    @license_hint = Tippfaul.license_hint
+    @base_package = Tippfaul.base_package
   end
 
   def exec!
-    puts "#{Tippfaul.project_root}/#{DB_DIR}/"
-
-    @license_hint = Tippfaul.license_hint
-    @base_package = Tippfaul.base_package
-
     Dir["#{Tippfaul.project_root}/#{DB_DIR}/*.groovy"].each do |f|
       # load f
       loader = FromLiquibase::LiquibaseLoader.new
